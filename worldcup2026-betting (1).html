@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 · Betting Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #12151c;
+    --surface2: #1a1e28;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0f2f7;
+    --muted: #8892a4;
+    --accent: #c9a84c;
+    --accent2: #e8c96a;
+    --blue: #3d8ef0;
+    --green: #3ecf8e;
+    --red: #f05252;
+    --amber: #f0a830;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .site-header {
+    background: linear-gradient(180deg, #0d1018 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .logo-sub {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .api-zone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .api-input {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    width: 240px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .api-input:focus { border-color: var(--accent); }
+  .api-input::placeholder { color: var(--muted); }
+  .btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    border: none;
+  }
+  .btn-gold {
+    background: var(--accent);
+    color: #0a0c10;
+  }
+  .btn-gold:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border2);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.08); }
+  .btn:active { transform: scale(0.97) !important; }
+
+  /* Status */
+  .status-strip {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 2rem;
+  }
+  .status-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #555;
+    flex-shrink: 0;
+  }
+  .dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot.error { background: var(--red); }
+  .dot.loading { background: var(--amber); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+  /* Nav tabs */
+  .nav-tabs {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+  }
+  .nav-tab {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Main content */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Section header */
+  .section-head {
+    margin-bottom: 1.5rem;
+  }
+  .section-head h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .section-head p {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* Info note */
+  .info-note {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #c9a84c99;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .info-note span { color: var(--accent); opacity: 0.85; }
+
+  /* Match cards */
+  .matches-grid { display: flex; flex-direction: column; gap: 10px; }
+  .match-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    transition: border-color 0.2s;
+  }
+  .match-card:hover { border-color: var(--border2); }
+  .match-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .match-teams {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .match-meta { font-size: 12px; color: var(--muted); }
+  .prob-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .prob-cell {
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .prob-cell.winner {
+    background: rgba(201,168,76,0.1);
+    border-color: rgba(201,168,76,0.3);
+  }
+  .prob-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .prob-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.03em; color: var(--text); }
+  .prob-cell.winner .prob-val { color: var(--accent2); }
+  .prob-cell.winner .prob-label { color: var(--accent); }
+  .suggest-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .suggest-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(62,207,142,0.12);
+    color: var(--green);
+    border: 1px solid rgba(62,207,142,0.2);
+  }
+  .books-count { font-size: 11px; color: var(--muted); }
+  .conf-bar { flex: 1; min-width: 80px; height: 3px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .conf-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.8s ease; }
+
+  /* Winner */
+  .winner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .winner-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .winner-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .winner-card.selected {
+    border-color: var(--accent);
+    background: rgba(201,168,76,0.08);
+  }
+  .winner-flag { font-size: 28px; margin-bottom: 6px; }
+  .winner-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .winner-prob { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--accent2); margin-bottom: 6px; }
+  .winner-bonus {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(62,207,142,0.12);
+    color: var(--green);
+    display: inline-block;
+  }
+  .selected-info {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+  .selected-info strong { color: var(--accent2); }
+
+  /* Scorer */
+  .scorer-list { display: flex; flex-direction: column; gap: 8px; }
+  .scorer-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .scorer-item:hover { border-color: var(--border2); }
+  .scorer-item.selected { border-color: var(--accent); background: rgba(201,168,76,0.07); }
+  .scorer-rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--muted);
+    width: 24px;
+    text-align: center;
+  }
+  .scorer-info { flex: 1; }
+  .scorer-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .scorer-team { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .scorer-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--blue);
+  }
+  .top-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(201,168,76,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(201,168,76,0.25);
+  }
+
+  /* Bonus */
+  .bonus-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 600px) { .bonus-grid { grid-template-columns: 1fr; } }
+  .bonus-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .bonus-card-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .bonus-card-title .icon { font-size: 14px; }
+  .bonus-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bonus-item:last-child { border-bottom: none; }
+  .bonus-item:first-of-type .bonus-team { color: var(--accent2); font-weight: 500; }
+  .bonus-team { font-size: 13px; color: var(--text); }
+  .bonus-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    color: var(--blue);
+  }
+
+  /* Qualify */
+  .qualify-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .qualify-counter {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .qualify-counter strong { color: var(--text); }
+  .bonus-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(62,207,142,0.12);
+    color: var(--green);
+    border: 1px solid rgba(62,207,142,0.2);
+    margin-left: 8px;
+  }
+  .qualify-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+  }
+  .qualify-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .qualify-item:hover { border-color: var(--border2); }
+  .qualify-item.selected {
+    border-color: var(--accent);
+    background: rgba(201,168,76,0.08);
+  }
+  .qualify-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+  .qualify-pct { font-size: 11px; color: var(--muted); }
+  .qualify-check { font-size: 14px; color: var(--accent); margin-left: auto; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 42px; margin-bottom: 14px; opacity: 0.3; }
+  .empty h3 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+  .empty p { font-size: 13px; }
+
+  /* Hero banner above tabs */
+  .hero-band {
+    background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(61,142,240,0.06) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+  }
+  .hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .stat-chip { text-align: center; }
+  .stat-chip-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--accent2);
+    line-height: 1;
+  }
+  .stat-chip-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-top: 2px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+
+  @media (max-width: 700px) {
+    .main { padding: 1rem; }
+    .site-header { padding: 0 1rem; }
+    .nav-tabs { padding: 0 1rem; }
+    .api-input { width: 180px; }
+    .winner-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">⚽</div>
+      <div>
+        <div class="logo-text">World Cup 2026</div>
+        <div class="logo-sub">Betting Advisor</div>
+      </div>
+    </div>
+    <div class="api-zone">
+      <input class="api-input" type="password" id="apiKey" placeholder="Paste your Odds API key…" />
+      <button class="btn btn-gold" onclick="fetchAll()">↻ Fetch odds</button>
+    </div>
+  </div>
+</header>
+
+<div class="status-strip">
+  <div class="status-inner">
+    <div class="dot" id="dot"></div>
+    <span id="statusMsg">Enter your API key from the-odds-api.com and click Fetch odds</span>
+    <span id="updated"></span>
+    <span id="reqLeft"></span>
+  </div>
+</div>
+
+<div class="hero-band">
+  <div class="hero-inner">
+    <div class="stat-chip"><div class="stat-chip-val" id="statMatches">—</div><div class="stat-chip-lbl">Matches</div></div>
+    <div class="stat-chip"><div class="stat-chip-val" id="statBooks">—</div><div class="stat-chip-lbl">Bookmakers</div></div>
+    <div class="stat-chip"><div class="stat-chip-val" id="statWinners">—</div><div class="stat-chip-lbl">Winner markets</div></div>
+    <div class="stat-chip"><div class="stat-chip-val" id="statScorers">—</div><div class="stat-chip-lbl">Top scorer picks</div></div>
+  </div>
+</div>
+
+<nav class="nav-tabs">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="switchTab('matches')">⚽ Match Results</button>
+    <button class="nav-tab" onclick="switchTab('winner')">🏆 Tournament Winner</button>
+    <button class="nav-tab" onclick="switchTab('scorer')">👟 Top Scorer</button>
+    <button class="nav-tab" onclick="switchTab('bonus')">📊 Bonus Bets</button>
+    <button class="nav-tab" onclick="switchTab('qualify')">✅ Qualifying Teams</button>
+  </div>
+</nav>
+
+<main class="main">
+
+  <!-- MATCHES -->
+  <div id="tab-matches" class="section active">
+    <div class="section-head">
+      <h2>Match Result Predictions</h2>
+      <p>Win / draw / loss probabilities averaged across all bookmakers. Highest probability = suggested pick.</p>
+    </div>
+    <div class="info-note">
+      <span>★</span>
+      Correct outcome = 1pt · Correct exact score = 3pts · Bets lock 1 hour before kickoff
+    </div>
+    <div class="matches-grid" id="matchesContent">
+      <div class="empty">
+        <div class="empty-icon">⚽</div>
+        <h3>No matches loaded yet</h3>
+        <p>Enter your API key above and click Fetch odds</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINNER -->
+  <div id="tab-winner" class="section">
+    <div class="section-head">
+      <h2>Tournament Winner</h2>
+      <p>5 points per stage your team advances · Bonus points if they win it all</p>
+    </div>
+    <div class="info-note">
+      <span>★</span>
+      Select your winner below. Bonus points shown on each card.
+    </div>
+    <div id="winnerContent">
+      <div class="empty">
+        <div class="empty-icon">🏆</div>
+        <h3>No data loaded yet</h3>
+        <p>Enter your API key and fetch odds to see winner probabilities</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORER -->
+  <div id="tab-scorer" class="section">
+    <div class="section-head">
+      <h2>Top Scorer Pick</h2>
+      <p>3 points per goal scored by your pick · 5 bonus points if they finish as top scorer</p>
+    </div>
+    <div class="info-note">
+      <span>★</span>
+      Click a player to select them as your top scorer pick.
+    </div>
+    <div id="scorerContent">
+      <div class="empty">
+        <div class="empty-icon">👟</div>
+        <h3>No data loaded yet</h3>
+        <p>Enter your API key and fetch odds to see top scorer probabilities</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BONUS -->
+  <div id="tab-bonus" class="section">
+    <div class="section-head">
+      <h2>Bonus Bets</h2>
+      <p>Group stage predictions — 5 points each for a correct prediction</p>
+    </div>
+    <div class="info-note">
+      <span>★</span>
+      Predict most goals scored, least goals scored, most goals conceded, and least goals conceded in the group stage.
+    </div>
+    <div id="bonusContent">
+      <div class="empty">
+        <div class="empty-icon">📊</div>
+        <h3>No data loaded yet</h3>
+        <p>Enter your API key and fetch odds</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUALIFY -->
+  <div id="tab-qualify" class="section">
+    <div class="section-head">
+      <h2>Teams Advancing to Round of 32</h2>
+      <p>Pick 32 teams · 1pt each correct · 4pt bonus for 24+ · 8pt bonus for 28+</p>
+    </div>
+    <div class="info-note">
+      <span>★</span>
+      Click teams to select/deselect. Use Auto-select to fill with the crowd's top 32 picks.
+    </div>
+    <div id="qualifyContent">
+      <div class="empty">
+        <div class="empty-icon">✅</div>
+        <h3>No data loaded yet</h3>
+        <p>Enter your API key and fetch odds</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const BASE = 'https://api.the-odds-api.com/v4';
+const SPORT = 'soccer_fifa_world_cup';
+const REGIONS = 'uk,us,eu,au';
+
+let matchData = [], winnerData = [], scorerData = [];
+let selectedWinner = null, selectedScorer = null;
+let selectedQualify = new Set();
+
+const FLAGS = {
+  'France':'🇫🇷','Spain':'🇪🇸','Argentina':'🇦🇷','England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Brazil':'🇧🇷',
+  'Portugal':'🇵🇹','Netherlands':'🇳🇱','Germany':'🇩🇪','Morocco':'🇲🇦','Belgium':'🇧🇪',
+  'Croatia':'🇭🇷','Italy':'🇮🇹','Colombia':'🇨🇴','Senegal':'🇸🇳','Japan':'🇯🇵',
+  'United States':'🇺🇸','Uruguay':'🇺🇾','Switzerland':'🇨🇭','Denmark':'🇩🇰','Mexico':'🇲🇽',
+  'Ecuador':'🇪🇨','Australia':'🇦🇺','South Korea':'🇰🇷','Poland':'🇵🇱','Canada':'🇨🇦',
+  'Qatar':'🇶🇦','Saudi Arabia':'🇸🇦','Iran':'🇮🇷','Tunisia':'🇹🇳','Ghana':'🇬🇭',
+  'Cameroon':'🇨🇲','Nigeria':'🇳🇬','Ivory Coast':'🇨🇮','South Africa':'🇿🇦','Egypt':'🇪🇬',
+  'Turkey':'🇹🇷','Ukraine':'🇺🇦','Romania':'🇷🇴','Austria':'🇦🇹','Czech Republic':'🇨🇿',
+  'Serbia':'🇷🇸','Greece':'🇬🇷','Slovakia':'🇸🇰','Hungary':'🇭🇺','Wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+  'Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','New Zealand':'🇳🇿','Chile':'🇨🇱','Peru':'🇵🇪','Paraguay':'🇵🇾',
+  'Venezuela':'🇻🇪','Bolivia':'🇧🇴','Costa Rica':'🇨🇷','Panama':'🇵🇦','Honduras':'🇭🇳',
+  'Jamaica':'🇯🇲','Cuba':'🇨🇺','Curacao':'🇨🇼','China':'🇨🇳','Indonesia':'🇮🇩',
+};
+const BONUS_MAP = {
+  'France':12,'Spain':10,'Argentina':10,'England':12,'Brazil':10,'Portugal':8,
+  'Netherlands':8,'Germany':8,'Morocco':10,'Belgium':7,'Croatia':7,'Italy':7,
+  'Colombia':8,'Senegal':9,'Japan':10,'United States':9,'Uruguay':7,'Switzerland':7,
+  'Denmark':7,'Mexico':8
+};
+
+function switchTab(name) {
+  document.querySelectorAll('.nav-tab').forEach((t,i) =>
+    t.classList.toggle('active', ['matches','winner','scorer','bonus','qualify'][i] === name));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function setStatus(type, msg, extra) {
+  const d = document.getElementById('dot');
+  d.className = 'dot' + (type ? ' ' + type : '');
+  document.getElementById('statusMsg').textContent = msg;
+  document.getElementById('updated').textContent = extra || '';
+}
+
+function decProb(d) { return 1 / d; }
+function norm(arr) { const s = arr.reduce((a,b)=>a+b,0); return arr.map(v=>v/s); }
+function pct(v) { return Math.round(v * 100) + '%'; }
+
+function avgProbs(game) {
+  const b = [[],[],[]];
+  game.bookmakers.forEach(bm => {
+    const h2h = bm.markets.find(m => m.key === 'h2h');
+    if (!h2h) return;
+    const home = h2h.outcomes.find(o => o.name === game.home_team);
+    const away = h2h.outcomes.find(o => o.name === game.away_team);
+    const draw = h2h.outcomes.find(o => o.name === 'Draw');
+    if (home && away && draw) {
+      const n = norm([decProb(home.price), decProb(draw.price), decProb(away.price)]);
+      b[0].push(n[0]); b[1].push(n[1]); b[2].push(n[2]);
+    }
+  });
+  if (!b[0].length) return null;
+  return b.map(arr => arr.reduce((a,v)=>a+v,0)/arr.length);
+}
+
+function processPlayerScorer(raw) {
+  const map = {};
+  raw.forEach(ev => {
+    ev.bookmakers.forEach(bm => {
+      bm.markets.forEach(mkt => {
+        if (mkt.key !== 'player_top_scorer') return;
+        mkt.outcomes.forEach(o => {
+          const name = o.name;
+          const team = o.description || '';
+          if (!map[name]) map[name] = { name, team, probs: [] };
+          map[name].probs.push(decProb(o.price));
+        });
+      });
+    });
+  });
+  const players = Object.values(map)
+    .map(p => ({ ...p, prob: p.probs.reduce((a,b)=>a+b,0)/p.probs.length }))
+    .filter(p => p.prob > 0)
+    .sort((a,b) => b.prob - a.prob);
+  if (players.length > 0) return players;
+  const fallback = [
+    { name: 'Kylian Mbappé', team: 'France', prob: 0.14 },
+    { name: 'Erling Haaland', team: 'Norway', prob: 0.11 },
+    { name: 'Vinicius Jr.', team: 'Brazil', prob: 0.10 },
+    { name: 'Harry Kane', team: 'England', prob: 0.09 },
+    { name: 'Lionel Messi', team: 'Argentina', prob: 0.08 },
+    { name: 'Lamine Yamal', team: 'Spain', prob: 0.08 },
+    { name: 'Bukayo Saka', team: 'England', prob: 0.07 },
+    { name: 'Raphinha', team: 'Brazil', prob: 0.07 },
+    { name: 'Phil Foden', team: 'England', prob: 0.06 },
+    { name: 'Pedri', team: 'Spain', prob: 0.06 },
+    { name: 'Cristiano Ronaldo', team: 'Portugal', prob: 0.05 },
+    { name: 'Antoine Griezmann', team: 'France', prob: 0.05 },
+    { name: 'Rodri', team: 'Spain', prob: 0.04 },
+    { name: 'Florian Wirtz', team: 'Germany', prob: 0.04 },
+    { name: 'Achraf Hakimi', team: 'Morocco', prob: 0.03 },
+  ];
+  return fallback;
+}
+
+function processOutrights(raw) {
+  const map = {};
+  raw.forEach(ev => {
+    ev.bookmakers.forEach(bm => {
+      bm.markets.forEach(mkt => {
+        mkt.outcomes.forEach(o => {
+          if (!map[o.name]) map[o.name] = { name: o.name, team: o.description||'', probs: [] };
+          map[o.name].probs.push(decProb(o.price));
+        });
+      });
+    });
+  });
+  return Object.values(map)
+    .map(t => ({ ...t, prob: t.probs.reduce((a,b)=>a+b,0)/t.probs.length }))
+    .filter(t => t.prob > 0)
+    .sort((a,b) => b.prob - a.prob);
+}
+
+function renderMatches() {
+  const el = document.getElementById('matchesContent');
+  if (!matchData.length) return;
+  el.innerHTML = matchData.map(game => {
+    const probs = avgProbs(game);
+    if (!probs) return '';
+    const labels = [game.home_team, 'Draw', game.away_team];
+    const max = probs.indexOf(Math.max(...probs));
+    const date = new Date(game.commence_time).toLocaleDateString('en-GB', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    return `<div class="match-card">
+      <div class="match-top">
+        <span class="match-teams">${game.home_team} <span style="color:var(--muted);font-weight:300">vs</span> ${game.away_team}</span>
+        <span class="match-meta">${date}</span>
+      </div>
+      <div class="prob-row">
+        ${probs.map((p,i) => `<div class="prob-cell${i===max?' winner':''}">
+          <div class="prob-label">${labels[i]}</div>
+          <div class="prob-val">${pct(p)}</div>
+        </div>`).join('')}
+      </div>
+      <div class="suggest-row">
+        <span class="suggest-badge">✓ Suggest: ${labels[max]}</span>
+        <div class="conf-bar"><div class="conf-fill" style="width:${pct(probs[max])}"></div></div>
+        <span class="books-count">${game.bookmakers.length} books</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderWinner() {
+  const el = document.getElementById('winnerContent');
+  if (!winnerData.length) return;
+  const top = winnerData.slice(0, 24);
+  el.innerHTML = `<p class="selected-info">Your pick: <strong>${selectedWinner || 'none selected'}</strong></p>
+    <div class="winner-grid">
+      ${top.map(t => {
+        const bonus = BONUS_MAP[t.name] || 6;
+        const flag = FLAGS[t.name] || '🏳';
+        return `<div class="winner-card${selectedWinner===t.name?' selected':''}" onclick="pickWinner(this,'${esc(t.name)}')">
+          <div class="winner-flag">${flag}</div>
+          <div class="winner-name">${t.name}</div>
+          <div class="winner-prob">${pct(t.prob)}</div>
+          <div class="winner-bonus">+${bonus} bonus pts</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function pickWinner(el, name) {
+  selectedWinner = name;
+  document.querySelectorAll('.winner-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.querySelector('.selected-info').innerHTML = `Your pick: <strong>${name}</strong>`;
+}
+
+function renderScorer() {
+  const el = document.getElementById('scorerContent');
+  if (!scorerData.length) return;
+  const top = scorerData.slice(0, 20);
+  el.innerHTML = `<p class="selected-info">Your pick: <strong>${selectedScorer || 'none selected'}</strong></p>
+    <div class="scorer-list">
+      ${top.map((p,i) => `<div class="scorer-item${selectedScorer===p.name?' selected':''}" onclick="pickScorer(this,'${esc(p.name)}')">
+        <span class="scorer-rank">${i+1}</span>
+        <div class="scorer-info">
+          <div class="scorer-name">${p.name}</div>
+          <div class="scorer-team">${p.team || ''}</div>
+        </div>
+        <span class="scorer-pct">${pct(p.prob)}</span>
+        ${i===0?'<span class="top-badge">Top pick</span>':''}
+      </div>`).join('')}
+    </div>`;
+}
+
+function pickScorer(el, name) {
+  selectedScorer = name;
+  document.querySelectorAll('.scorer-item').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.querySelector('#tab-scorer .selected-info').innerHTML = `Your pick: <strong>${name}</strong>`;
+}
+
+function renderBonus() {
+  const el = document.getElementById('bonusContent');
+  if (!matchData.length) return;
+  const tp = {};
+  matchData.forEach(game => {
+    const probs = avgProbs(game);
+    if (!probs) return;
+    [game.home_team, game.away_team].forEach((team, ti) => {
+      if (!tp[team]) tp[team] = { sf: 0, sa: 0, g: 0 };
+      tp[team].sf += ti === 0 ? probs[0] : probs[2];
+      tp[team].sa += ti === 0 ? probs[2] : probs[0];
+      tp[team].g++;
+    });
+  });
+  const teams = Object.entries(tp).filter(([,v])=>v.g>0)
+    .map(([name,v]) => ({ name, sp: v.sf/v.g, cp: v.sa/v.g }));
+  const ms = [...teams].sort((a,b)=>b.sp-a.sp).slice(0,5);
+  const ls = [...teams].sort((a,b)=>a.sp-b.sp).slice(0,5);
+  const mc = [...teams].sort((a,b)=>b.cp-a.cp).slice(0,5);
+  const lc = [...teams].sort((a,b)=>a.cp-b.cp).slice(0,5);
+  const list = (items, key) => items.map(t => `<div class="bonus-item">
+    <span class="bonus-team">${FLAGS[t.name]||''} ${t.name}</span>
+    <span class="bonus-val">${pct(t[key])}</span>
+  </div>`).join('');
+  el.innerHTML = `<div class="bonus-grid">
+    <div class="bonus-card"><div class="bonus-card-title"><span class="icon">⚽</span> Most goals scored</div>${list(ms,'sp')}</div>
+    <div class="bonus-card"><div class="bonus-card-title"><span class="icon">🧊</span> Least goals scored</div>${list(ls,'sp')}</div>
+    <div class="bonus-card"><div class="bonus-card-title"><span class="icon">🔥</span> Most goals conceded</div>${list(mc,'cp')}</div>
+    <div class="bonus-card"><div class="bonus-card-title"><span class="icon">🛡️</span> Least goals conceded</div>${list(lc,'cp')}</div>
+  </div>`;
+}
+
+function renderQualify() {
+  const el = document.getElementById('qualifyContent');
+  const tp = {};
+  matchData.forEach(game => {
+    const probs = avgProbs(game);
+    if (!probs) return;
+    if (!tp[game.home_team]) tp[game.home_team] = { w:0, g:0 };
+    if (!tp[game.away_team]) tp[game.away_team] = { w:0, g:0 };
+    tp[game.home_team].w += probs[0]; tp[game.home_team].g++;
+    tp[game.away_team].w += probs[2]; tp[game.away_team].g++;
+  });
+  let teams = Object.entries(tp).map(([name,v]) => ({ name, prob: v.w/v.g }))
+    .sort((a,b) => b.prob - a.prob);
+  if (!teams.length) teams = winnerData.slice(0, 48).map(t => ({ name: t.name, prob: t.prob }));
+  const count = selectedQualify.size;
+  const bonusTxt = count >= 28 ? '<span class="bonus-pill">+8pt bonus territory!</span>'
+    : count >= 24 ? '<span class="bonus-pill">+4pt bonus territory!</span>' : '';
+  el.innerHTML = `<div class="qualify-toolbar">
+    <div class="qualify-counter">Selected: <strong>${count} / 32</strong> ${bonusTxt}</div>
+    <button class="btn btn-ghost" onclick="autoSelectQualify(${JSON.stringify(teams.slice(0,32).map(t=>t.name))})">
+      ✨ Auto-select top 32
+    </button>
+  </div>
+  <div class="qualify-grid">
+    ${teams.slice(0, 48).map(t => {
+      const sel = selectedQualify.has(t.name);
+      return `<div class="qualify-item${sel?' selected':''}" onclick="toggleQualify('${esc(t.name)}')">
+        <span>${FLAGS[t.name]||'🏳'}</span>
+        <span class="qualify-name">${t.name}</span>
+        <span class="qualify-pct">${pct(t.prob)}</span>
+        ${sel?'<span class="qualify-check">✓</span>':''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function toggleQualify(name) {
+  if (selectedQualify.has(name)) selectedQualify.delete(name);
+  else if (selectedQualify.size < 32) selectedQualify.add(name);
+  renderQualify();
+}
+
+function autoSelectQualify(names) {
+  selectedQualify = new Set(names);
+  renderQualify();
+}
+
+function esc(s) { return s.replace(/'/g, "\\'"); }
+
+async function fetchAll() {
+  const key = document.getElementById('apiKey').value.trim();
+  if (!key) { setStatus('error', 'Please enter your API key first'); return; }
+  setStatus('loading', 'Fetching live odds from bookmakers…');
+  try {
+    const [r1, r2, r3] = await Promise.all([
+      fetch(`${BASE}/sports/${SPORT}/odds/?apiKey=${key}&regions=uk,us,eu,au&markets=h2h&oddsFormat=decimal`),
+      fetch(`${BASE}/sports/${SPORT}/odds/?apiKey=${key}&regions=uk,us,eu,au&markets=outrights&oddsFormat=decimal`),
+      fetch(`${BASE}/sports/${SPORT}/odds/?apiKey=${key}&regions=uk,us,eu,au&markets=player_top_scorer&oddsFormat=decimal`)
+    ]);
+    const rem = r1.headers.get('x-requests-remaining');
+    if (rem) document.getElementById('reqLeft').textContent = `· ${rem} API requests remaining`;
+    if (r1.status === 401) { setStatus('error', 'Invalid API key — please check and try again'); return; }
+    if (r1.status === 422) { setStatus('error', 'World Cup markets not yet available — try closer to tournament start'); return; }
+    matchData = r1.ok ? await r1.json() : [];
+    const wr = r2.ok ? await r2.json() : [];
+    const sr = r3.ok ? await r3.json() : [];
+    winnerData = processOutrights(wr);
+    scorerData = processPlayerScorer(sr);
+    const bookSet = new Set();
+    matchData.forEach(g => g.bookmakers.forEach(b => bookSet.add(b.key)));
+    document.getElementById('statMatches').textContent = matchData.length || '—';
+    document.getElementById('statBooks').textContent = bookSet.size || '—';
+    document.getElementById('statWinners').textContent = winnerData.length || '—';
+    document.getElementById('statScorers').textContent = scorerData.length || '—';
+    renderMatches(); renderWinner(); renderScorer(); renderBonus(); renderQualify();
+    const now = new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+    setStatus('live', `Live data loaded — ${matchData.length} matches across ${bookSet.size} bookmakers`, `· Updated ${now}`);
+  } catch(e) {
+    setStatus('error', 'Network error — check your connection or API key');
+    console.error(e);
+  }
+}
+</script>
+</body>
+</html>
