@@ -776,18 +776,18 @@ let selectedWinner = null, selectedScorer = null;
 let selectedQualify = new Set();
 
 const FLAGS = {
-  'France':'🇫🇷','Spain':'🇪🇸','Argentina':'🇦🇷','England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Brazil':'🇧🇷',
-  'Portugal':'🇵🇹','Netherlands':'🇳🇱','Germany':'🇩🇪','Morocco':'🇲🇦','Belgium':'🇧🇪',
-  'Croatia':'🇭🇷','Italy':'🇮🇹','Colombia':'🇨🇴','Senegal':'🇸🇳','Japan':'🇯🇵',
-  'United States':'🇺🇸','Uruguay':'🇺🇾','Switzerland':'🇨🇭','Denmark':'🇩🇰','Mexico':'🇲🇽',
-  'Ecuador':'🇪🇨','Australia':'🇦🇺','South Korea':'🇰🇷','Poland':'🇵🇱','Canada':'🇨🇦',
-  'Qatar':'🇶🇦','Saudi Arabia':'🇸🇦','Iran':'🇮🇷','Tunisia':'🇹🇳','Ghana':'🇬🇭',
-  'Cameroon':'🇨🇲','Nigeria':'🇳🇬','Ivory Coast':'🇨🇮','South Africa':'🇿🇦','Egypt':'🇪🇬',
-  'Turkey':'🇹🇷','Ukraine':'🇺🇦','Romania':'🇷🇴','Austria':'🇦🇹','Czech Republic':'🇨🇿',
-  'Serbia':'🇷🇸','Greece':'🇬🇷','Slovakia':'🇸🇰','Hungary':'🇭🇺','Wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿',
-  'Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','New Zealand':'🇳🇿','Chile':'🇨🇱','Peru':'🇵🇪','Paraguay':'🇵🇾',
-  'Venezuela':'🇻🇪','Bolivia':'🇧🇴','Costa Rica':'🇨🇷','Panama':'🇵🇦','Honduras':'🇭🇳',
-  'Jamaica':'🇯🇲','Cuba':'🇨🇺','Curacao':'🇨🇼','China':'🇨🇳','Indonesia':'🇮🇩',
+  'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czech Republic':'🇨🇿',
+  'Canada':'🇨🇦','Bosnia and Herzegovina':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
+  'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'United States':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Turkey':'🇹🇷',
+  'Germany':'🇩🇪','Curacao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
+  'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
+  'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
+  'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
+  'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
+  'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇦🇹','Jordan':'🇯🇴',
+  'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
+  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦',
 };
 const BONUS_MAP = {
   'France':12,'Spain':10,'Argentina':10,'England':12,'Brazil':10,'Portugal':8,
